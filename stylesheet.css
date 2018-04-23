@@ -1,0 +1,12 @@
+.container{
+	width="95%";
+	border: 2px solid black;
+	padding: 5px;
+}
+
+.blockNote{
+	width="50%";
+	border: 1px solid black;
+	padding: 5px;
+	box-shadow: 5px 5px 5px 5px #888888;
+}
