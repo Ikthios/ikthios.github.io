@@ -1,0 +1,494 @@
+<html>
+<head>
+<title>Ikthios Lab | Web Dev</title>
+<link rel="stylesheet" type="text/css" href="stylesheet.css">
+</head>
+
+<body>
+	<div class="container">
+		<a href="index.html">Home</a>
+		<center><h2>Web Development</h2></center>
+		<a name="top"></a>
+		<hr>
+		<ul>
+			<li><a href="#highlight">Highlighted Table Rows</a></li>
+			<li><a href="#chaineddropdowns">Chained Dropdowns</a></li>
+			<li><a href="#sendingparameters">Sending Ajax to PHP</a></li>
+			<li><a href="#sendingemails">Sending Emails in PHP</a></li>
+		</ul>
+		
+		
+		
+		<!-- Code snippets. -->
+		<div class="block-simple">
+			<h2>Code Snippets</h2>
+			<ol>
+				<li>First code must be placed between &lt;pre&gt; and &lt;/pre&gt; tags.</li>
+				<li>For code segments:
+					<ul>
+						<li>The &lt; character must be replaced with &amp;lt;</li>
+						<li>The &gt; character must be replaced with &amp;gt;</li>
+					</ul>
+				</li>
+				<li>The main thing to note is that if you want to show code or escape markup in its literal form, then you need to make the first character
+					the escape code.</li>
+				<li>For example, if you want to show &amp;lt; as a literal string instead of &lt;, then replace & with &amp;amp;</li>
+			</ol>
+		</div>
+		<br>
+		
+		
+		<!-- Highlighted table rows. -->
+		<div class="block-simple">
+			<a 	name="hightlight"></a>
+			<a href="#top">Top of Page</a>
+			<h2>Highlighted table rows</h2>
+			First create the table.
+			
+<pre class="pre-simple">
+		&lt;table id=&quot;fruit&quot; class=&quot;hoverTable&quot;&gt;
+		&lt;thead&gt;
+			&lt;tr&gt;
+				&lt;th&gt;Name&lt;/th&gt;
+				&lt;th&gt;Color&lt;/th&gt;
+				&lt;th&gt;Plant&lt;/th&gt;
+			&lt;/tr&gt;
+		&lt;/thead&gt;
+		&lt;tr&gt;
+			&lt;td&gt;Apple&lt;/td&gt;
+			&lt;td&gt;Red&lt;/td&gt;
+			&lt;td&gt;Tree&lt;/td&gt;
+		&lt;/tr&gt;
+		&lt;tr&gt;
+			&lt;td&gt;Orange&lt;/td&gt;
+			&lt;td&gt;Orange&lt;/td&gt;
+			&lt;td&gt;Tree&lt;/td&gt;
+		&lt;/tr&gt;
+		&lt;tr&gt;
+			&lt;td&gt;Grape&lt;/td&gt;
+			&lt;td&gt;Purple, Red, Green&lt;/td&gt;
+			&lt;td&gt;Vine&lt;/td&gt;
+		&lt;/tr&gt;
+	&lt;/table&gt;
+</pre>
+			
+			All that is shown is a simple HTML page with a table. The table id is not important right now but take notice of the class <em>hoverTable</em>. This will be important once the CSS is built.
+
+			<h3>CSS</h3>
+			Now we move onto creating the CSS stylesheet step by step which we will name <em>stylesheet.css</em>.
+
+			The first part is just putting padding around the table and staggering the row background colors for better viewing. 
+			
+<pre class="pre-simple">
+table{
+	padding: 5px;
+}
+
+tr:nth-child(even) {background: #FFF4EA}
+tr:nth-child(odd) {background: #C9DBC9}
+</pre>
+
+The second part is styling the header row and individual cells.
+
+<pre class="pre-simple">
+thead th{
+	border: 1px solid black;
+	background: white;
+}
+
+td{
+	border: 1px dashed black;
+	cursor: pointer;
+	padding: 5px;
+}
+
+td.header{
+	font-weight: bold;
+	text-align: center;
+}
+</pre>
+			
+			Up next is the part we need to pay attention to, the <em>hoverTable</em> section.
+			
+<pre class="pre-simple">
+.hoverTable tr:hover, tr.selected{
+	  background-color: #B06363;
+}
+</pre>
+			
+			This is the only code required to highlight each row. Simply change the <em>background-color</em> value to change the color of the highlighted row.
+
+			<h3>Inserting Row Clicking Functionality</h3>
+			Now we move on to part two, allowing the user to click on a table row and get data from it. The first thing we need to do is update the <em>tr</em> for each row in the table.
+			
+<pre class="pre-simple">&lt;tr onClick=showResult($(this).find("td:first").text())&gt;</pre>
+			
+			Then include the jquery library and create the <em>showResult</em> function. This function can be placed in <em>index.php</em> above the <em>html</em> tag.
+			
+<pre class="pre-simple">
+&lt;script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.2/jquery.min.js">&lt;/script&gt;
+&lt;script&gt;
+function showResult(value){
+	alert(value);
+}
+&lt;/script&gt;
+</pre>
+			
+			After these two steps a user will be able to click on a row and have the first cell data shown in a javascript alert window.
+		</div>
+		<br>
+		
+		
+		<!-- Chained dropdowns. -->
+		<div class="block-simple">
+		<a name="chaineddropdowns"></a>
+		<a href="#top">Top of Page</a>
+<h2>Chained Dropdowns</h2>
+
+<h3>Create the MySQL Database</h3>
+Before we can start working on the HTML the backed database must be created and populated. First create the tables.
+
+<pre class="pre-simple">
+CREATE TABLE plant (type, VARCHAR(25), displayName VARCHAR(25));
+INSERT INTO plant (type, displayName) VALUES (tree, Tree);
+INSERT INTO plant (type, displayName) VALUES (vine, Vine);
+
+CREATE TABLE fruit (plant VARCHAR(25), type (VARCHAR(25), displayName VARCHAR(25));
+INSERT INTO fruit (plant, type, displayName) VALUES (tree, apple, Apple);
+INSERT INTO fruit (plant, type, displayName) VALUES (tree, orange, Orange);
+INSERT INTO fruit (plant, type, displayName) VALUES (vine, watermelon, Watermelon);
+INSERT INTO fruit (plant, type, displayName) VALUES (vine, grape, Grape);
+</pre>
+
+<h3>Create the Webpage</h3>
+The second thing we need to do is to create the initial webpage that will hold the select boxes. We will give it the standard name <em>index.php</em>. The code will be explained below.
+
+<pre class="pre-simple">
+&lt;?php
+// Create database connection
+$db = new PDO(&quot;mysql:host=$host;dbname=$database&quot;, &quot;$user&quot;, &quot;$password&quot;);
+// Create sql
+$sql = &quot;SELECT type, displayName FROM plant;
+// Prepare query statement
+$query= $db-&gt;prepare($sql);
+// Execute the sql statement
+$query-&gt;execute();
+$array= array();
+// Put returned information from query into an array
+while($row = $query-&gt;fetch(PDO::FETCH_ASSOC)){
+	$array[] = $row;
+}
+?&gt;
+
+&lt;script src=&quot;jquery-1.11.3.min.js&quot;&gt;&lt;/script&gt;
+&lt;script src=&quot;chainedSelects.js&quot;&gt;&lt;/script&gt;
+
+&lt;html&gt;
+&lt;head&gt;
+&lt;title&gt;Chained Selects&lt;/title&gt;
+&lt;/head&gt;
+
+&lt;body&gt;
+&lt;!-- First select box --&gt;
+&lt;select id=&quot;plant&quot;&gt;
+&lt;option value=&quot;0&quot;&gt;&lt;/option&gt;
+&lt;?php
+foreach($array as $item){
+?&gt;
+&lt;option value=&quot;&lt;?php echo $item['type']; ?&gt;&quot;&gt;&lt;?php echo $item['displayName']; ?&gt;&lt;/option&gt;
+&lt;?php
+}
+?&gt;
+
+&lt;!-- Second select box --&gt;
+&lt;select id=&quot;fruit&quot;&gt;
+&lt;!-- Formatting is found in getFruit.php --&gt;
+&lt;/select&gt;
+&lt;/body&gt;
+&lt;/html&gt;
+</pre>
+
+Let's go over the code before moving on. The first thing we did is prepare a PDO query and send it to the database. Then we took the returned table rows and inserted them into an array. This array was then used to populate the first select box with items. The value of each item is the <em>type</em> and the selection text is the <em>displayName</em>. Before moving on take a look at the second select box. Notice how there are no options for it. This is because all of the options will be printed using a PHP file.
+
+<h3>Create the Ajax Function</h3>
+The next step is to create an Ajax function that will detect when the first select box's value has changed, take the new value and send it to another SQL query that will grab rows from the fruit table. This function will be inserted into the file <em>chainedSelects.js</em>. Although the function is Ajax it is placed inside the javascript file <em>chainedSelects.js</em>.
+
+<pre class="pre-simple">
+$(document).ready(function()
+{
+	$(&quot;.plant&quot;).change(function()
+	{
+		var type=$(this).val();
+		var dataString = 'type='+ type;
+
+		$.ajax
+		({
+			type: &quot;POST&quot;,
+			url: &quot;getFruit.php&quot;,
+			data: dataString,
+			cache: false,
+			success: function(html)
+			{
+				$(&quot;.fruit&quot;).html(html);
+			}
+		});
+	});
+});
+</pre>
+
+The first line inside the function will watch the first select box for any changes in value.
+
+<pre class="pre-simple">$(".plant").change(function()</pre>
+
+The select box is identified with through the id <em>plant</em> witch is grabbed by the <em>".plant"</em> part. The variables in the function will grab the value of the first select box and create the datastring to be sent over to the PHP file.
+
+<pre class="pre-simple">
+var type=$(this).val();
+var dataString = 'type='+ type;
+</pre>
+
+The body of the Ajax function deals with defining what type of data is sent over, the data to send over and what to do with a successful return.
+
+<pre class="pre-simple">
+type: &quot;POST&quot;,
+url: &quot;getFruit.php&quot;,
+data: dataString,
+cache: false,
+success: function(html)
+{
+	$(&quot;.fruit&quot;).html(html);
+}
+</pre>
+
+The data will be sent by POST to the file <em>getFruit.php</em>. The data to send over is the variable <em>dataString</em> which will look something like the following if <em>Tree</em> was selected.
+
+<pre class="pre-simple">'type'=tree</pre>
+
+The success part tells the function to apply returned values to the second select box with the id <em>fruit</em>.
+
+<h3>Create the PHP/MySQL File</h3>
+The final step is to create the PHP file, <em>getFruit.php</em>, that will take the data sent from the Ajax function, insert it into an SQL query, send the query and print the returned table data to the second select box. While it sounds complicated it is really simple to do.
+
+<pre class="pre-simple">
+include('db.php');
+
+$type= $_POST['type'];
+
+$sql = (&quot;SELECT type, displayName FROM fruit WHERE plant = '$type'&quot;);
+$result = $conn-&gt;query($sql);
+
+// Start displaying all available versions
+while($row = $result-&gt;fetch_assoc()){
+	echo '&lt;option value=&quot;' .$row['type']. '&quot;&gt;' .$row['displayName']. '&lt;/option&gt;';
+}
+</pre>
+
+The code here is simple. Create a query using the POST data sent from the Ajax function, send the query to the database and use a while loop to echo the options. These echoed options will be returned to the Ajax function which will in turn send it to the second select box. 
+
+If you navigate to the webpage and select a plant type from the first select box, such as <em>Tree</em>, the second select box will then be populated with the values <em>Apple</em> and <em>Orange</em>.
+
+<h3>Extending the Chained Selects</h3>
+Here is the final question. How do you extend the Ajax function to include a third select box? Simple. First lets take another look at the Ajax function.
+
+<pre class="pre-simple">
+$(document).ready(function()
+{
+	$(&quot;.plant&quot;).change(function()
+	{
+		var type=$(this).val();
+		var dataString = 'type='+ type;
+
+		$.ajax
+		({
+			type: &quot;POST&quot;,
+			url: &quot;getFruit.php&quot;,
+			data: dataString,
+			cache: false,
+			success: function(html)
+			{
+				$(&quot;.fruit&quot;).html(html);
+			}
+		});
+	});
+});
+</pre>
+
+Focus on the <em>$(".plant").change(function()</em> part. Lets say we wanted to add a third select box, with an id of <em>fruitType</em> that would populate with different types of the fruit selected. For example, if the first select box was Tree and the second was Apple, the third select box would populate with Granny Smith and Macintosh. To do this simple copy and past the <em>$(".plant").change(function()</em> part and change the values to reflect the new PHP file.
+
+<pre class="pre-simple">
+$(&quot;.fruit&quot;).change(function()
+{
+	var type=$(this).val();
+	var dataString = 'type='+ type;
+
+	$.ajax
+	({
+		type: &quot;POST&quot;,
+		url: &quot;getFruitType.php&quot;,
+		data: dataString,
+		cache: false,
+		success: function(html)
+		{
+			$(&quot;.fruitType&quot;).html(html);
+		}
+	});
+});
+</pre>
+
+The only changed lines are 1, 9 and 14 while the rest stayed the same. The final <em>chainedSelects.js</em> file will be as follows.
+
+<pre class="pre-simple">
+$(document).ready(function()
+{
+    $(&quot;.plant&quot;).change(function()
+    {
+        var type=$(this).val();
+        var dataString = 'type='+ type;
+ 
+        $.ajax
+        ({
+            type: &quot;POST&quot;,
+            url: &quot;getFruit.php&quot;,
+            data: dataString,
+            cache: false,
+            success: function(html)
+            {
+                $(&quot;.fruit&quot;).html(html);
+            }
+        });
+    });
+ 
+	$(&quot;.fruit&quot;).change(function()
+	{
+	   var type=$(this).val();
+	   var dataString = 'type='+ type;
+
+	   $.ajax
+	   ({
+		   type: &quot;POST&quot;,
+		   url: &quot;getFruitType.php&quot;,
+		   data: dataString,
+		   cache: false,
+		   success: function(html)
+		   {
+			   $(&quot;.fruitType&quot;).html(html);
+		   }
+	   });
+	});
+});
+</pre>
+		</div>
+		<br>
+		
+		
+		<!-- PHP/Ajax - Sending Parameters.-->
+		<div class="block-simple">
+		<a name="sendingparameters"></a>
+		<a href="#top">Top of Page</a>
+<h2>PHP/Ajax - Sending Parameters</h2>
+We will start out with a basic HTML page, <em>index.php</em>, containing two input fields and a button field.
+
+<h3>HTML</h3>
+<pre class="pre-simple">
+&lt;html&gt;
+&lt;head&gt;
+&lt;title&gt;Sending Parameters to PHP&lt;/title&gt;
+&lt;/head&gt;
+
+&lt;body&gt;
+  &lt;div id=&quot;container&quot;&gt;
+    &lt;input type=&quot;text&quot; id=&quot;username&quot; /&gt;&lt;br&gt;
+    &lt;input type=&quot;text&quot; id=&quot;comments&quot; /&gt;&lt;br&gt;
+    &lt;input type=&quot;button&quot; id=&quot;button&quot; value=&quot;Submit&quot; onclick=sendParameters() /&gt;     
+  &lt;/div&gt;
+&lt;/body&gt;
+&lt;/html&gt;
+</pre>
+
+There isn't a lot going on here. Just two input fields for a username and comments. The button will call the javascript function <em>sendParameters()</em> which will grab the input field text and send it to the PHP file over ajax.
+
+<h3>Javascript</h3>
+Next we create the javascript file, <em>ajax.js</em>. 
+
+<pre class="pre-simple">
+function sendParameters(){
+	var username= $(&quot;#username&quot;).val();
+	var comments = $(&quot;#comments&quot;).val();
+	
+	$.ajax({
+		url: 'receiver.php',
+		type: 'POST',
+		data: {username:username, comments:comments},
+	})
+}
+</pre>
+
+Let's start out with the first two lines.
+
+<pre class="pre-simple">
+var username= $(&quot;#username&quot;).val();
+var comments = $(&quot;#comments&quot;).val();
+</pre>
+
+This code is going to create two variables, <em>username</em> and <em>comments</em>, and grab the values from the input elements by identifying them using the <em>#username</em> and <em>#comments</em> values.
+
+The next part is the ajax section.
+
+<pre class="pre-simple">
+$.ajax({
+	url: 'receiver.php',
+	type: 'POST',
+	data: {username:username, comments:comments},
+})
+</pre>
+
+The url line is the PHP file that will be receiving the parameters, the type line declares that the parameters will be sent using POST and the data line formats the data into POST form. In the data line you will see the format <em>username:username</em>. The first username is the variable name that will be used in POST and the second username is the variable being sent over. These can be different but I like to keep them the same.
+
+<h3>PHP</h3>
+The final file to create is the PHP file <em>receiver.php</em>.
+
+<pre class="pre-simple">
+$username = $_POST['username'];
+$comments = $_POST['comments'];
+</pre>
+
+Shown is how to access the passed parameters in POST on the PHP page.
+		</div>
+		<br>
+		
+		
+		<!-- PHP - Sending Emails -->
+		<div class="block-simple">
+		<a name="sendingemails"></a>
+		<a href="#top">Top of Page</a>
+<h2>PHP - Sending Emails</h2>
+To start out there needs to be four pieces of information in order to send the email.
+<ul>
+	<li>To - The email address our email will be sent to.</li>
+	<li>Subject - What will appear in the subject line of the sent email.</li>
+	<li>Message - What will appear in the body of the email.</li>
+	<li>Header - The formatted email address that will be used to send the email.</li>
+</ul>
+
+A quick note about the header before continuing. It must be formatted as <em>From: email@address.com</em> or else the return address will be labeled as the server itself.
+
+<h3>Setup</h3>
+<pre class="pre-simple">
+$to = receiver@email.com;
+$subject = "This is the subject";
+$message = "This is the message area that will appear to the user.";
+$header = "From: sender@email.com";
+</pre>
+
+<h3>Sending the Email</h3>
+<pre class="pre-simple">
+if(mail($to, $subject, $message, $header)){
+  return true;
+}
+</pre>
+
+In order to send the email just use the <em>mail()</em> function call and send the parameters in the exact order of <em>to, subject, message, header</em>. I like to put the mail function in an if statement for error catching in the event that the email cannot be sent.
+		</div>
+	</div>
+</body>
+</html>

@@ -1,11 +1,91 @@
 <html>
 <head>
 <title>Ikthios Lab | TCP/IP</title>
+<link rel="stylesheet" type="text/css" href="stylesheet.css">
 </head>
 
 <body>
-	<div id="container">
-		TCP/IP
+	<div class="container">
+		<a href="index.html">Home</a>
+		<center><h2>TCP/IP & OSI Model</h2></center>
+		<hr>
+		<div>
+			<center>
+			<div class="blockTcpIp">
+				<div style="background-color: red;padding: 5px;">TCP/IP</div>
+				<div style="background-color: red;padding: 5px;">Application</div>
+				<div style="background-color: red;padding: 5px;">Layer</div>
+				<div style="background-color: orange;padding: 5px;">Transport Layer</div>
+				<div style="background-color: yellow;padding: 5px;">Internet Layer</div>
+				<div style="background-color: green;padding: 5px;">Network Access </div>
+				<div style="background-color: green;padding: 5px;">Layer</div>
+			</div>
+			<div class="blockTcpIp">
+				<div style="background-color: red;padding: 5px;">OSI Application Layer</div>
+				<div style="background-color: orange;padding: 5px;">Presentation Layer</div>
+				<div style="background-color: yellow;padding: 5px;">Session Layer</div>
+				<div style="background-color: green;padding: 5px;">Transport Layer</div>
+				<div style="background-color: cyan;padding: 5px;">Network Layer</div>
+				<div style="background-color: blue;padding: 5px;">Data Link Layer</div>
+				<div style="background-color: purple;padding: 5px;">Physical Layer</div>
+			</div>
+			</center>
+		</div>
+		
+
+		<h3>OSI Model</h3>
+		<h3>Physical</h3>
+		This layer includes physical mediums, such as cards and cords, used to send and receive data in the form of electrical bits. Protocols include Fast Ethernet, RS232 and ATM.
+		<h3>Data Link</h3>
+		In this level individual packets are encoded/decoded into bits and handles error correction in the physical layer as well as flow control and frame syncronization. Protocols include PPP, FDDI, ATM and IEEE.
+		<h3>Network</h3>
+		The Network layer provides switching and routing for transmitting data from node to node with the use of virtual paths. Protocols include AppleTalk DDP, IP and IPX.
+		<h3>Transport</h3>
+		The fourth layer handles the transfer of data between hosts and deals with end to end error recovery and flow control. Protocols include SPC, TCP and UDP.
+		<h3>Session</h3>
+		The Session layer establishes, manages and terminates connections between host applications. Protocols include NFS, NetBios, RPC and SQL.
+		<h3>Presentation</h3>
+		The sixth layer translates data between the application format and the network format. It also encrypts data before sending it across the network. Protocols include ASCII, TIFF, GIF, JPEG and MPEG.
+		<h3>Application</h3>
+		The last layer supports application and end user processes. Here everything is application specific such as file transfers and emails. Some applications, Telnet and FTP, exist entirely in the application layer. Protocols include WWW, NFS, SNMP, Telnet, HTTP and FTP.
+
+		<hr />
+
+		<h3>TCP/IP Model</h3>
+		<h3>Network Access Layer</h3>
+		The first layer of the TCP/IP model is the Network Access Layer. It is the lowest layer on the model providing an interface for the physical network. The physical network is made up of a physical medium such as an Ethernet, coaxial or fiber optic cable. This layer defines how data will be sent physically through the physical medium in the form of electrical pulses. It will also receive these electrical pulses, translate them and handle error correction in the event of corrupted data. The most popular architecture for this layer is Ethernet which uses CSMA/CD discussed in more detail below.
+		<h3><span style="text-decoration:underline;">CSMA/CD</span></h3>
+		Carrier Sense Multiple Access/Collision Detection
+		<h3>Internet Layer</h3>
+		The second layer in the TCP/IP model is the Internet Layer. This layer wraps data packets from the higher levels into frames, otherwise known as IP datagrams. These frames contain the source and destination IP addresses which allow routers to correctly transmit the frames to the appropriate destination. This layer also allows host systems to insert datagrams into the network independent of other datagrams for easier delivery to the destination hosts. This injection ability keeps the network medium from being monopolized by a single system. Since the datagrams are independent they may arrive at the destination out of order. It is the responsibility of the higher layers to reassemble the datagrams in the proper order to reconstruct the file. This layers' main protocols include the following list:
+		<ul>
+			<li>IP (Internet Protocol)</li>
+			<li>ICMP (Internet Control Message Protocol)</li>
+			<li>ARP (Address Resolution Protocol)</li>
+			<li>RARP (Reverse Address Resolution Protocol)</li>
+			<li>IGMP (Internet Group Management Protocol)</li>
+		</ul>
+		&nbsp;
+		<h3>Transport Layer</h3>
+		The third layer in the TCP/IP model is the Transport Layer. Here the system devices gain access to communicate with other peers and servers on the network.The main protocols include:
+		<ul>
+			<li>TCP (Transport Control Protocol)</li>
+			<li>UDP (User Datagram Protocol)</li>
+		</ul>
+		<h3>Application Layer</h3>
+		The fourth and final layer in the TCP/IP model is the Application Layer. Here programs like internet browsers or video games will reside and communicate with the lower layers to send and receive network traffic. This layer defines how these programs will interact with the transport layer. The main protocols include:
+		<ul>
+			<li>DNS (Domain Name Service)</li>
+			<li>HTTP (Hypertext Transfer Protocol)</li>
+			<li>Telnet</li>
+			<li>SSH (Secure Shell)</li>
+			<li>FTP (File Transfer Protocol)</li>
+			<li>SNMP (Simple Network Management Protocol)</li>
+			<li>SMTP (Simple Mail Transfer Protocol)</li>
+			<li>DHCP (Dynamic Host Configuration Protocol)</li>
+			<li>X Windows</li>
+			<li>RDP (Remote Desktop Protocol)</li>
+		</ul>
 	</div>
 </body>
 </html>

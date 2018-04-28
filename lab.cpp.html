@@ -1,0 +1,351 @@
+<html>
+<head>
+<title>Ikthios Lab | C++ Code</title>
+<link rel="stylesheet" type="text/css" href="stylesheet.css">
+</head>
+
+<body>
+	<div class="container">
+		<a href="index.html">Home</a>
+		<center><h2>C++ Code</h2></center>
+		<hr>
+		<ul>
+			<li><a href="#pipes">Pipes</a></li>
+			<li><a href="#pthreads">PThreads</a></li>
+			<li><a href="#semaphores">Semaphores</a></li>
+			<li><a href="#forks">Forks</a></li>
+		</ul>
+		
+		<!-- Pipes -->
+		<div class="block-simple">
+			<a name="pipes"></a>
+			<a href="#top">Top of Page</a>
+<h3>Pipes</h3>
+
+To start off, pipes are not part of the stardard C/C++ library. They are defined as POSIX and will be located in the <a href="http://linux.die.net/man/7/pipe" target="_blank">appropriate documentation</a>.
+
+When a pipe is created the programmer will receive two file descriptors, read and write, 0 and 1. Pipes only go one way, so a process will write to side 1 and read from side 0.
+<pre class="pre-simple">
+int fds[2];
+ if(pipe(fds) == -1){
+  cout &lt;&lt; "Error creating pipe." &lt;&lt; endl;
+  exit(1);
+}
+</pre>
+
+In the above example two file descriptors are created (fds[2])  and then activated with a pipe. The write side will be fds[1] and the read side will be fds[0]. Multiple pipes can also be created using a for loop as seen below.
+<pre class="pre-simple">
+int fds[2][2];
+ for(int i=0; i&lt;2; i++){
+  if(pipe(fds[i][1]) == -1){
+    cout &lt;&lt; "Error creating pipe." &lt;&lt; endl;
+    exit(1);
+  }
+}
+</pre>
+
+Above two pipes are created. In fds[2][2], the first [2] designates that there will be two pipes, 0 and 1. The second [2] designates the read (0) and write(1) file descriptors. The for loop then creates these
+
+Pipes act as a data buffer (think of it like an array) that temporarily holds data. When the pipe is read from the data in the buffer is passes to the reading process and removed from the buffer. A process can only write to a buffer with space and only read from a non empty pipe. If these conditions fail then the process is marked as not run able by the kernel scheduler and the process is blocked.
+		</div>
+		<br>
+		<!-- PThreads -->
+		<div class="block-simple">
+			<a name="pthreads"></a>
+			<a href="#top">Top of Page</a>
+<h3>PThreads</h3>
+
+What are pthreads? In a short story, they allow multi-threading capabilities in programs. Now what are threads? Threads are sequences of instructions that are executed concurrently with other instruction sequences.
+<h3>How It Works</h3>
+The process of multi-threading a program is straight forward. The running function (main in this case) is considered the master (or parent thread). It uses calls to pthread that will spawn any number of slave (or child) processes that will run concurrently with each other. The parent thread will then wait for the children to finish and finally merge (or join) their threads with itself.
+<h3>Syntax</h3>
+The first thing that needs to be done is to create a thread.
+
+<pre class="pre-simple">
+pthread_t thread;
+</pre>
+
+The code above will create a thread identifier to use later in the code. Below is the syntax for initializing a single pthread.
+<pre class="pre-simple">
+int pthread_create(pthread * thread, const pthread_attr_t *attr, void *(*start_routine)(void *), void *arg);</pre>
+
+The code above looks really complicated so lets go through it one parameter at a time. The first parameter is the thread identifier. Usually this will be a reference call to an identifier, &amp;thread for example. The second parameter will be the thread attributes. This can be NULL most of the time unless there is a specific need for anything other than the defaults. The third attribute is the function that the thread will execute during its lifetime. Finally, the fourth attribute is for any values that must be sent to the function the thread is calling. If there are no variables to pass, it can be NULL. In the event that the child thread is created in a for loop, the fourth parameter can pass <em>i</em> as a standard variable otherwise the passed variable must be a reference. Now we will translate the syntax example into something readable below.
+
+<pre class="pre-simple">
+int pthread_create(&amp;thread, NULL, PrintHello, NULL);
+</pre>
+
+Above, a thread is created for the identifier <em>thread</em>, which uses the default parameters when calling the function PrintHello (notice the lack of parentheses) and passes no values to the function.
+
+After the threads have been created and ran the parent must join itself with the child threads. For that the following syntax is used.
+
+<pre class="pre-simple">
+pthread_join(pid, NULL);
+</pre>
+
+This call will wait until the child threads are done running and then properly end then by merging with the parent. The first parameter is the id of the child thread. The second parameter is the return value. If the join was successful then 0 is returned, otherwise the exit status of the thread is copied into the location provided by the second parameter.
+<h3>Basic Example</h3>
+
+<hr />
+
+Now that the syntax has been defined we can move onto a simple example. In this example the parent (main function) will create two child threads in a for loop that will call the function <em>PrintHello()</em>, printing hello. The child threads will also pass their number in the for loop so we know which thread is currently printing.
+<pre class="pre-simple">
+#include &lt;stdlib.h&gt;
+#include &lt;stdio.h&gt;
+#include &lt;pthread.h&gt;
+
+#define THREADS 2
+</pre>
+Here are the header files we need to compile the program. Notice the <em>pthread.h</em> header file that is needed for the pthread class.
+<pre class="pre-simple">
+void * PrintHello(int id)
+{
+printf("Hello world from %d!\n", id);
+}
+</pre>
+The function that each child thread will call. The output will be the hello world message followed by the passed variable <em>id.</em>
+<pre class="pre-simple">
+int main(int argc, char *argv[])
+{
+pthread_t threads[2];
+int i;
+</pre>
+Above, an array of pthreads is initialized and set to hold only two threads at max.
+<pre class="pre-simple">
+for(i=0; i&lt;THREADS; i++){
+pthread_create(&amp;threads[i], NULL, PrintHello, i);
+}
+</pre>
+The for loop will create two threads which will call the <em>PrintHello()</em> function and pass the value of <em>i</em>.
+<pre class="pre-simple">
+for(i=0; i&lt;THREADS; i++){
+pthread_join(&amp;threads[i], NULL);
+}
+</pre>
+The second for loop will join each thread in the array when they have completed their runs.
+<pre class="pre-simple">
+return 0;
+}
+</pre>
+Closing off the program.
+
+The above example combines everything mentioned in the syntax section. First an array to hold the threads is initialized. Then two child threads are created in a for loop, calling the <em>PrintHello()</em> function and passing the value of <em>i</em> so we know which thread is doing the printing. Finally another for loop is used to join the child threads with the parent.
+		</div>
+		<br>
+		<!-- Semaphores -->
+		<div class="block-simple">
+			<a name="semaphores"></a>
+			<a href="#top">Top of Page</a>
+<h3>Semaphores</h3>
+
+What are semaphores? In a short story, they manage system resources so that running threads do not access these resources and change them and disturb the other threads. The two types of semaphores that will be in the post are binary and counting semaphores.
+<h3>How They Work</h3>
+Semaphores are simple, yet powerful in how they operate. What they do is allow a certain number of processes to access resources in a managed fashion. <strong>Binary semaphores</strong> allow one process at a time to access a resource by using the value take and release. <strong>Counting semaphores</strong> allow 1*N processes to access resources by using the value set for N.
+
+Let's start with binary semaphores. The semaphore has two states: taken and released. When a process wants to use a resource guarded by the semaphore, it will invoke the wait call, which will allow the process to continue using the resource. Any process after the first one that tries to invoke the wait call will be backlogged into a queue. Once the first process invokes the signal call, then the first process inside the queue will resume operation with the requested resource.
+
+Next let's look at counting semaphores. They operate almost the same way as binary semaphores except that they have the ability to allow resource access to more than one process at a time. Two calls are invoked to operate a counting semaphore: wait and signal. When a process wants access to a resource it will use the wait call which will decrease the counting semaphore by 1. If the value of the semaphore is above or equal to 0 then the process can continue. If the value drops below zero then the process is put into a queue until another process invokes the signal call, increasing the semaphore by 1 and allowing a queue process to continue.
+<h3>Syntax</h3>
+Before creating a semaphore make sure to include the following header file.
+
+<pre class="pre-simple">
+#include &lt;semaphore.h&gt;
+</pre>
+
+Now we can move onto creating a semaphore variable.
+
+<pre class="pre-simple">
+sem_t s;
+</pre>
+
+Just like creating any other type of variable, it's that easy. The next step is to fully initialize the semaphore.
+
+<pre class="pre-simple">
+sem_init(&amp;s, 0, 1);
+</pre>
+
+This initialization is a lot simpler than pthreads but we'll go through it all the same. The first parameter is a reference to the semaphore variable created above. The second parameter is how the semaphore will be shared. If the value is 0 then it will be shared between threads and if the value is non-zero then the semaphore will be shared between processes. Finally, the third parameter is the initial value. This is the fork in the road for binary and counting semaphores. If the third parameter's value is 1 then it is a binary semaphore else if it is greater than 1 it is a counting semaphore.
+
+Now we move onto the wait and signal calls.
+
+<pre class="pre-simple">
+sem_wait(&amp;s);
+sem_post(&amp;s);
+</pre>
+
+The syntax is quite simple for both. The only parameter required is the reference to the initialized semaphore variable. Also notice that the signal call is actually named <em>post</em> instead of signal.
+
+<pre class="pre-simple">
+sem_close(&amp;s);
+</pre>
+
+The last thing to do when the semaphore is done being used is to close it with the above code. The only parameter is a reference to the initialized semaphore variable.
+<h3>Basic Example</h3>
+
+<hr />
+
+The following example whill show how semaphores can enforce timing between two functions. Two threads will be created, a buyer and a seller. Semaphores will allow the seller to start with a greeting and print the shops money account while keeping the buyer from running until and accessing the critical resource until the seller is done. The critical resource in this example will be the variable <em>shopAccount</em>. The buyer function will then access the critical resource and add two dollars while the seller function is waiting for access to it. Once the buyer has finished the seller will then be allowed to access <em>shopAccount</em> again.
+<pre class="pre-simple">
+#include &lt;stdlib.h&gt;
+#include &lt;stdio.h&gt;
+#include &lt;pthread.h&gt;
+#include &lt;semaphore.h&gt;
+
+#define SHARED 1
+
+sem_t greet, buyApple, leave;
+int shopAccount = 0;
+
+void Seller()
+{
+sem_wait(&amp;greet);
+</pre>
+
+The <em>seller</em> function decreases the <em>greet</em> semaphore by one and runs its code.
+<pre class="pre-simple">
+printf("Welcome to my shop [Seller].\n");
+printf("Shop account: %d\n", shopAccount);
+sleep(1);
+sem_post(&amp;buyApple);
+</pre>
+
+After running the beginning code the <em>buyApple</em> semaphore is increased by one and the <em>buyer</em> function starts to run.
+<pre class="pre-simple">
+// Return from Buyer()
+sem_wait(&amp;leave);
+</pre>
+
+Once the <em>buyer</em> function has run the <em>leave</em> semaphore will be decreased by one and the <em>seller</em> function will continue running to finish the program.
+<pre class="pre-simple">
+printf("Here you are, enjoy [Seller].\n");
+printf("Shop account: %d\n", shopAccount);
+}
+
+void Buyer()
+{
+sem_wait(&amp;buyApple);
+</pre>
+
+The <em>buyer </em>function will wait until the <em>seller</em> function has added a resource to the <em>buyApple</em> semaphore and start to run its code.
+<pre class="pre-simple">
+printf("I would like one apple [Buyer] for $1.00.\n");
+shopAccount += 2;
+sleep(1);
+sem_post(&amp;leave);
+}
+</pre>
+
+After running its code the <em>buyer</em> function will increase the <em>leave</em> semaphore by one, allowing the <em>seller</em> function to continue running.
+<pre class="pre-simple">
+int main(int argc, char *argv[])
+{
+pthread_t buyer, seller;
+
+sem_init(&amp;greet, SHARED, 1);
+sem_init(&amp;buyApple, SHARED, 0);
+sem_init(&amp;leave, SHARED, 0);
+
+pthread_create(&amp;buyer, NULL, Buyer, NULL);
+pthread_create(&amp;seller, NULL, Seller, NULL);
+
+pthread_join(&amp;buyer, NULL);
+pthread_join(&amp;seller, NULL);
+
+pthread_exit(NULL);
+}
+</pre>
+		</div>
+		<br>
+		<!-- Forks -->
+		<div class="block-simple">
+			<a name="forks"></a>
+			<a href="#top">Top of Page</a>
+<h3>Forks</h3>
+
+Forks, or forking a process, is the act of splitting a running parent process into different copies. These copies are called child processes (or slave processes). The process is the same as creating child threads with pthreads but there are differences between multiprocessing and multi-threading.
+<h3><span style="text-decoration:underline;">How They Work</span></h3>
+A parent process is duplicated when the <em>fork()</em> call is made and a value is returned depending on the success rate. If the return value is 0 then a child process is created where if the return value is -1 an error occurs and control is returned back to the parent.
+
+While the child process will be a duplicate of the parent there are a few things that will not be copied to the child.
+<ul>
+ 	<li>The child will have its' own unique process id (PID).</li>
+ 	<li>Its' semaphore, record locks and timers will be reset to 0.</li>
+ 	<li>It will not inherit any asynchronous IO operations or contexts.</li>
+</ul>
+<h3><span style="text-decoration:underline;">Syntax</span></h3>
+We will start with the call that actually splits a running process.
+<pre class="pre-simple">
+fork()
+</pre>
+
+Simple. This call will need to be placed inside an IF-Else block in order to correctly split a running process.
+<pre class="pre-simple">
+if(fork() = 0){
+// Child code
+}
+else if(fork() &lt; 0){
+cerror("Failed to fork child.");
+}
+else{
+// Parent code
+}
+</pre>
+
+This If-Else block uses the return values to determine which code will be assigned to which process. If the return value is 0 then code in the <em>Child code</em> section will be run. A return value less than 0 causes an error and control is handed back to the parent process. The parent process will be assigned code in the <em>Parent code</em> section and any code that comes after the If-Else block.
+<h3>Basic Example</h3>
+
+<hr />
+
+This basic example will show how a parent and child process can work concurrently performing two different tasks. Each process will increment a variable for five rounds before completing.
+<pre class="pre-simple">
+#include
+#include
+// Required for routine
+#include &lt;sys/types.h&gt;
+#include &lt;sys/wait.h&gt;
+#include
+#include // exit() declaration
+
+using namespace std;
+
+int childVar = 2, i, parentVar = 0;
+int main()
+{
+if(fork() == 0){
+// Executed by child process
+cout &lt;&lt; "Child code running." &lt;&lt; endl;
+for(i=0; i&lt;5; i++){
+cout &lt;&lt; "childVar: " &lt;&lt; childVar &lt;&lt; endl;
+childVar++;
+sleep(1);
+}
+exit(0);
+}
+</pre>
+
+Here the child is split off from the parent and begins to increment its variable.
+<pre class="pre-simple">
+else if(fork() &lt; 0){
+cerr &lt;&lt; "Failed to fork" &lt;&lt; endl;
+exit(1);
+}
+</pre>
+
+In the event the fork fails this error catch will receive it and hand control back to the parent process.
+<pre class="pre-simple">
+for(i=0; i&lt;5; i++){
+cout &lt;&lt; "parentVar: " &lt;&lt; parentVar &lt;&lt; endl;
+parentVar++;
+sleep(1);
+}
+</pre>
+
+While the child is running the parent will also run its code and increment the assigned variable.
+<pre class="pre-simple">
+return 0;
+}
+</pre>
+		</div>
+	</div>
+</body>
+</html>

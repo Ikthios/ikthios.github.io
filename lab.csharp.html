@@ -1,0 +1,263 @@
+<html>
+<head>
+<title>Ikthios Lab | C# Code</title>
+<link rel="stylesheet" type="text/css" href="stylesheet.css">
+</head>
+
+<body>
+	<div class="container">
+		<a href="index.html">Home</a>
+		<center><h2>C# Code</h2></center>
+		<a name="top"></a>
+		<hr>
+		<ul>
+			<li><a href="#sockets">Highlighted Table Rows</a></li>
+			<li><a href="#threads">Chained Dropdowns</a></li>
+		</ul>
+		
+		
+		
+		<!-- TCP sockets. -->
+		<div class="block-simple">
+			<a name="sockets"></a>
+			<a href="#top">Top of Page</a>
+<h3>TCP Sockets</h3>
+
+Here I will be documenting the basic procedures for performing communications over TCP/UDP connections in C#. All of the code examples were created using the .NET 4.5 framework in Visual Studio 2015 Enterprise.
+
+Servers need two things in order to connect to requesting clients: a port and IP address. An IP address is like a street address. This address allows data on the network to find the correct computer. A port is like a door on a house. Once data finds the correct computer it will have to enter the computer through a port. The IP address and port must be specified before starting the server.
+<h3>TCP vs UDP</h3>
+
+<hr />
+
+Before we can continue there are two terms that need to be defined as a programmer will need to choose the correct one depending on the type of data flowing between two or more peers.
+
+<strong>TCP</strong> (<em>Transmission Control Protocol</em>) is a connection based protocol that is used when the data must get to the client intact and the transmission time is not critical. Data packets transferred using TCP will also arrive in the same order that it was sent and error correction is available. In order for this connection to exist a three-way handshake must happen. During this handshake the first computer will send a SYN packet to the second computer. The second computer will send back a SYN-ACK packet and finally the first computer will send an ACK packet. After this happens the connection between the two computers is established. This protocol is used in email, web and file transfer services.
+
+<strong>UDP</strong> (<em>User/Universal Datagram Protocol</em>) is a connection-less based protocol. With this protocol data packets are sent to another client and the connection relationship ends. There is no three-way handshake, no error correction and no garuantee that the data packets will be intact when they reach their destination. Despite the cons UDP connections offer better speed performance over TCP. This protocol is used in streaming services, live tv, games and voice communications.
+<h3>Listeners</h3>
+
+<hr />
+
+Once an IP address and port have been specified a listener can be created.
+<pre class="pre-simple">TcpListener listener = new TcpListener(ipaddress, port);
+listener.Start();
+</pre>
+Above a TcpListener is created and binded to an IP address and port. The listener is then started, which will begin listening on the specified port number for new connections. This listener will specifically listen for incoming TCP connection requests. Similarly, a UdpListener can also be created in the same manner.
+<h3>Sockets</h3>
+
+<hr />
+
+Sockets are fundamental for allowing network communication between two endpoints over TCP/IP. They provide bidirectional communication for sending and/or receiving data. Once a socket has connected to another socket no other communication with clients outside the socket pair can happen. To create a socket in .NET the Socket class must be utilized.
+<pre class="pre-simple">Socket sock = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+Socket sock = new Socket(AddressFamily.InterNetworkV6, SocketType.Dgram, ProtocolType.Udp);
+</pre>
+Above are examples of both a TCP socket using the IPv4 address and a UDP socket using the IPv6 address. Sockets come with two+ overloads that must be set during initialization.
+<ul>
+	<li>AddressFamily
+<ul>
+	<li>This specifies the addressing scheme that a Socket class instance can use.
+<ul>
+	<li>InterNetwork is the IPv4 address of the local host.</li>
+	<li>InterNetwork6 is the IPv6 address of the local host</li>
+</ul>
+</li>
+	<li>The two members listed above are two examples that a programmer would start out using in the beginning. The total list of members also include AppleTalk, FireFox, Netbios, Unix and others.</li>
+	<li>The complete list can be found <a href="https://msdn.microsoft.com/en-us/library/system.net.sockets.addressfamily%28v=vs.110%29.aspx" target="_blank">here</a>.</li>
+</ul>
+</li>
+	<li>SocketType
+<ul>
+	<li>This specifies the type of socket an instance can use.</li>
+	<li>Stream
+<ul>
+	<li>This member is used for reliable, two way TCP connections.</li>
+</ul>
+</li>
+	<li>Dgram (Datagram)
+<ul>
+	<li>This member is used for unreliable, connectionless UDP connections.</li>
+</ul>
+</li>
+	<li>Other members include Raw, Rdm, Seqpacket, and unknown.</li>
+</ul>
+</li>
+	<li>ProtocolType
+<ul>
+	<li>This specifies what protocol the instance can support.</li>
+	<li>TCP
+<ul>
+	<li>See above section.</li>
+</ul>
+</li>
+	<li>UDP
+<ul>
+	<li>See above section.</li>
+</ul>
+</li>
+	<li>The full list can be found <a href="https://msdn.microsoft.com/en-us/library/system.net.sockets.protocoltype%28v=vs.110%29.aspx" target="_blank">here</a>.</li>
+</ul>
+</li>
+</ul>
+Below, we will expand the code from the listeners section to show incoming connection requests being accepted by a socket.
+[code language="csharp"]
+TcpListener list = new TcpListener(ipaddress, port);
+list.start();
+Socket sock = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+while(true)
+{
+  sock = list.AcceptSocket();
+}
+[/code]
+
+The while loop will constantly accept all incoming connection requests as long as the listener is active. To stop accepting connections simply break the loop. The listener will continue to listen but all requests will be ignored.
+<h3>Sending and Receiving Data</h3>
+
+<hr />
+
+There are many ways to send and receive data but all have the same core concept: the data must be sent in a byte stream over the network. In this section we will focus on the simple example of sending a small text message from the client to the server. More advanced options will be discussed in their own standalone post.
+<h3><span style="text-decoration:underline;">Client Code</span></h3>
+<pre class="pre-simple">
+Console.WriteLine("Enter the server IP address: ");
+string serverIp = Console.ReadLine();
+Console.WriteLine("Enter the server Port number: ");
+int serverPort = int.Parse(Console.ReadLine());
+
+// Create the endpoint for the server
+IPEndPoint endPoint = new IPEndPoint(IPAddress.Parse(serverIp), serverPort);
+// Create a TCP socket to send data over
+Socket sendSocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+
+try{
+  // Connect to the server
+  sendSocket.Connect(endPoint);
+  // Start looping for multiple messages
+  while (true){
+    Console.WriteLine("Enter the message to send: ");
+    string message = Console.ReadLine() + "\n";
+
+    if (message.Equals("EXIT\n")){
+      // Close socket connection to the server
+      sendSocket.Close();
+      break;
+    }
+    else{
+      // Convert the string message to a byte array with ASCII encoding
+      byte[] sendMessage = Encoding.ASCII.GetBytes(message);
+      // Send the data to the server over the TCP socket
+      sendSocket.SendTo(sendMessage, endPoint);
+    }
+  }
+  Console.WriteLine("Client shutting down.");
+  }
+  catch(Exception e){
+    Console.WriteLine(e.ToString());
+  }
+}
+</pre>
+
+<h3><span style="text-decoration:underline;">Server Code</span></h3>
+<pre class="pre-simple">
+// Create the TCP listener that will accept incoming connection requests
+TcpListener listener = new TcpListener(IPAddress.Parse(GetIpAddress()), 6000);
+// Start listening
+listener.Start();
+Console.WriteLine("Server listening on " + listener.LocalEndpoint);
+
+// Create the server socket that will connect to the client
+Socket socket = listener.AcceptSocket();
+// Create a byte array to hold the incoming data
+byte[] receivedBytes = new byte[1500];
+
+try{
+    while (true){
+      // Receive the incoming byte array over the server socket
+      int receivedSize = socket.Receive(receivedBytes);
+
+      for(int i=0; i&lt;receivedSize; i++){
+        // Print each character to the console window
+        Console.Write(Convert.ToChar(receivedBytes[i]));
+     }
+   }
+}
+catch(Exception e){
+  Console.WriteLine(e.ToString());
+}
+</pre>
+
+<h3><span style="text-decoration:underline;">Obtaining the Local IP Address</span></h3>
+<pre class="pre-simple">
+public static string GetIpAddress(){
+  IPHostEntry localhost;
+  string localAddress = "";
+  // Get the hostname of the local machine
+  localhost = Dns.GetHostEntry(Dns.GetHostName());
+  foreach (IPAddress address in localhost.AddressList){
+    // Look for the IPv4 address of the local machine
+    if (address.AddressFamily.ToString() == "InterNetwork"){
+      // Convert the IP address to a string and return it
+      localAddress = address.ToString();
+    }
+  }
+  return localAddress;
+}
+</pre>
+		</div>
+		<br>
+		
+		
+		<!-- Stopping threads gracefully. -->
+		<div class="block-simple">
+			<a name="threads"></a>
+			<a href="#top">Top of Page</a>
+<h3>Stopping Threads Gracefully</h3>
+This post will cover one simple topic on how to gracefully stop a thread in C#. To start out there is option of Thread.Abort() when coding threads. This form of stopping threads is NOT the proper way to do it as there is no guarantee that the process will actually stop plus raising an exception. The proper way to shutdown a thread is to have the work code put into a while loop and have the working code check every loop if it should stop or continue running. The code for this post can be found on <a href="https://github.com/Ikthios/MDL-Thread-Stopping.git">Github</a>.
+
+The program itself will contain a simple GUI interface consisting of two buttons, <em>start</em> and <em>stop</em> along with a multi-line read-only textbox. When the user presses the start button a single thread will begin outputting data to the textbox using a for loop. It will continue to loop and output data until the <em>stop</em> button is pressed where the current for loop will finish and the thread will exit. The thread stop can be confirmed by exiting the program after the thread has been stopped while performing a debug run in Visual Studio, which will exit debug mode since the thread has been gracefully stopped.
+
+Instead of posting the entire code we will only look at the code specific to actually stopping the thread. Note the private DoWork() method would be called by <em>Thread thread = new Thread(new ThreadStart(DoWork))</em>, starting the actual thread. This method is what will be stopped with a simple call and Boolean value.
+<pre class="pre-simple">
+bool stopping = false;
+</pre>
+
+First a Boolean value must be created and set to false. This value will be requested by the thread after each loop is completed to see if it should stop the work loop and exit.
+<pre class="pre-simple">
+private void DoWork()
+{
+  while(!stopping)
+  {
+    // Do work here
+  }
+
+  if(stopping) {return; }
+}
+</pre>
+
+In the DoWork method a while loop is created that checks if the <em>stopping</em> variable has been set to true by an external call to the Stopping method. If not then it continues to do work inside the loop until the <em>stopping</em> variable is set to true. If <em>stopping</em> is set during the loops run time then the if statement following the while loop will check a second time for the set variable. In the event that <em>stopping</em> has been set to true the statement will return and exit the DoWork method.
+
+All work that is to be done by the thread should go in the <em>Do work here</em> section. Single statements, loops and method calls can all be used in this work section without compromising the thread stop code as long as it all remains inside the parent while loop.
+<pre class="pre-simple">
+public void Stop()
+{
+  lock (stopLock){
+    stopping = true;
+  }
+}
+</pre>
+
+Above is the method responsible for allowing external calls to set the variable to true, starting the thread shutdown process. In this method you will probably notice the <em>lock</em> statement just before the variable assigning statement. The <em>lock</em> statement is similar to a semaphore ensuring that only one thread accesses the critical section of a method at a time, in this case the variable reassign statement.
+<pre class="pre-simple">
+public bool Stopping(){
+get{
+    lock (stopLock){
+      return stopping;
+    }
+  }
+}
+</pre>
+
+Finally we have the method used by the DoWork while loop to return whether or not the thread shutdown process has been called.
+		</div>
+	</div>
+</body>
+</html>

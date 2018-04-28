@@ -1,0 +1,57 @@
+<html>
+<head>
+<title>Ikthios Lab | PRTM</title>
+<link rel="stylesheet" type="text/css" href="stylesheet.css">
+</head>
+
+<body>
+	<div class="container">
+		<a href="index.html">Home</a>
+		<center><h2>Personal Red Team Manual</h2></center>
+		<hr>
+		<div class="block-simple">
+			<h3>Metasploit - Recon</h3>
+			<table class="table-simple">
+				<tr><td>Command</td><td>Description</td><td>Help Command</td></tr>
+				<tr><td>use auxiliary/scanner/portscan/syn<br>
+						set RHOSTS 192.168.2.80<br>
+						set THREADS 50<br>
+						run</td>
+					<td>SYN Port Scanner</td><td>search portscan</td>
+				</tr>
+				<tr><td>use auxiliary/scanner/smb/smb_version<br>
+						set RHOSTS 192.168.2.80<br>
+						run</td>
+					<td>Server Message Block Scanning</td><td>show options</td>
+				</tr>
+				<tr><td>use auxiliary/scanner/mssql/mssql_ping<br>
+						set RHOSTS 192.168.2.0/24<br>
+						set THREADS 255<br>
+						run</td>
+					<td>Microsoft SQL Server Ping</td><td>show options</td>
+				</tr>
+				<tr><td>use auxiliary/scanner/ssh/ssh_version<br>
+						set RHOSTS 192.168.2.0/24<br>
+						set THREADS 50<br>
+						run</td>
+					<td>SSH Server Scan</td><td></td>
+				</tr>
+				<tr><td>use auxiliary/scanner/ftp/ftp_version<br>
+						set RHOSTS 192.168.2.0/24<br>
+						set THREADS 255<br>
+						run</td>
+					<td>FTP Scan</td><td>show options</td>
+				</tr>
+				<tr><td>use auxiliary/scanner/ftp/anonymous<br>
+						set RHOSTS 192.168.2.0/24<br>
+						set THREADS 50<br>
+						run</td>
+					<td>FTP Anonymous Scan</td><td></td>
+				</tr>
+			</table>
+		</div>
+		
+		
+	</div>
+</body>
+</html>
